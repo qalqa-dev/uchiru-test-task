@@ -2,6 +2,24 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(
+            null,
+            null,
+            l.pathname.slice(0, -1) + decoded + l.hash,
+          );
+        }
+      })(window.location);
+    </script>
     <link rel="icon" type="image/svg+xml" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -12,8 +30,8 @@
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kinterest</title>
-    <script type="module" crossorigin src="/frontend-challenge/assets/index-Dj0JxUta.js"></script>
-    <link rel="stylesheet" crossorigin href="/frontend-challenge/assets/index-B3WiIrxM.css">
+    <script type="module" crossorigin src="/frontend-challenge/assets/index-3bQ9cmrw.js"></script>
+    <link rel="stylesheet" crossorigin href="/frontend-challenge/assets/index-Bt8mPF2W.css">
   </head>
   <body>
     <div id="root"></div>
