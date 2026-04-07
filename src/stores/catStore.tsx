@@ -1,4 +1,4 @@
-import { getCatsBreeds, getCatsByBreed } from '@/data/api';
+import { getCatsBreeds, getCatsByBreed, getRandomCats } from '@/data/api';
 import { CatStore } from '@/model/catStore';
 import { create } from 'zustand';
 
@@ -8,25 +8,23 @@ const API_KEY_STORAGE_KEY = 'cat_api_key';
 export const useCatStore = create<CatStore>((set, get) => ({
   breeds: [],
   cats: [],
+  randomCats: [],
   favorites: JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]'),
   isLoadingMain: false,
   isLoadingBreed: false,
+  isLoadingRandom: false,
   hasMore: true,
   error: null,
   currentPage: 0,
+  currentRandomPage: 0,
   picturesPerPage: 10,
   userApiKey:
     import.meta.env.VITE_API_KEY ||
     localStorage.getItem(API_KEY_STORAGE_KEY) ||
     '',
-  isNeedToAuth: false,
 
   fetchBreeds: async () => {
     const { userApiKey, picturesPerPage, currentPage, breeds, hasMore } = get();
-    if (!userApiKey) {
-      set({ isNeedToAuth: true });
-      return;
-    }
     try {
       if (hasMore) {
         set({ isLoadingMain: true, error: null });
@@ -46,8 +44,8 @@ export const useCatStore = create<CatStore>((set, get) => ({
           set({ hasMore: false, isLoadingMain: false });
         }
       }
-    } catch (error: any) {
-      set({ error, isLoadingMain: false });
+    } catch (error: unknown) {
+      set({ error: error as Error, isLoadingMain: false });
     }
   },
 
@@ -57,15 +55,28 @@ export const useCatStore = create<CatStore>((set, get) => ({
       set({ isLoadingBreed: true, error: null });
       const cats = await getCatsByBreed(breed, picturesPerPage, userApiKey);
       set({ cats: cats || [], isLoadingBreed: false });
-    } catch (error: any) {
-      set({ error, isLoadingBreed: false });
+    } catch (error: unknown) {
+      set({ error: error as Error, isLoadingBreed: false });
+    }
+  },
+
+  fetchRandomCats: async () => {
+    const { picturesPerPage, currentRandomPage, randomCats } = get();
+    try {
+      set({ isLoadingRandom: true, error: null });
+      const newCats = await getRandomCats(currentRandomPage, picturesPerPage);
+      set({
+        randomCats: [...randomCats, ...newCats],
+        currentRandomPage: currentRandomPage + 1,
+        isLoadingRandom: false,
+      });
+    } catch (error: unknown) {
+      set({ error: error as Error, isLoadingRandom: false });
     }
   },
 
   resetCats: () => {
-    set({
-      cats: [],
-    });
+    set({ cats: [] });
   },
 
   addToFavorites: (cat) => {
@@ -97,7 +108,6 @@ export const useCatStore = create<CatStore>((set, get) => ({
 
   setApiKey: (apiKey: string) => {
     set({ userApiKey: apiKey });
-    set({ isNeedToAuth: false });
     localStorage.setItem(API_KEY_STORAGE_KEY, apiKey);
   },
 }));

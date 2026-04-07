@@ -1,41 +1,30 @@
 import { useCatStore } from '@/stores/catStore';
-import Card from 'components/Card/Card';
-import NoAuthPlaceholder from 'components/NoAuthPlaceholder/NoAuthPlaceholder';
+import BreedCard from 'components/BreedCard/BreedCard';
 import Skeleton from 'components/Skeleton/Skeleton';
 import { debounce } from 'lodash';
 import { useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './App.module.scss';
 
 function App() {
-  const {
-    breeds,
-    fetchBreeds,
-    isLoadingMain,
-    isNeedToAuth,
-    hasMore,
-    picturesPerPage,
-  } = useCatStore();
+  const { randomCats, fetchRandomCats, isLoadingRandom, picturesPerPage } =
+    useCatStore();
 
   const handleScroll = useCallback(
     debounce(() => {
       if (
         window.innerHeight + window.scrollY >=
           document.documentElement.scrollHeight - 300 &&
-        !isLoadingMain &&
-        hasMore
+        !isLoadingRandom
       ) {
-        fetchBreeds();
+        fetchRandomCats();
       }
     }, 200),
-    [fetchBreeds, isLoadingMain, hasMore],
+    [fetchRandomCats, isLoadingRandom],
   );
 
   useEffect(() => {
-    if (isNeedToAuth) return;
-
-    if (breeds.length === 0 && !isLoadingMain) {
-      fetchBreeds();
+    if (randomCats.length === 0 && !isLoadingRandom) {
+      fetchRandomCats();
     }
 
     window.addEventListener('scroll', handleScroll);
@@ -43,35 +32,20 @@ function App() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [fetchBreeds]);
+  }, [fetchRandomCats]);
 
-  const navigate = useNavigate();
   return (
     <main className={styles.container}>
-      {isNeedToAuth ? (
-        <NoAuthPlaceholder />
-      ) : (
-        <>
-          <h2>Все породы котиков</h2>
-          <ul className={styles.list}>
-            {breeds.map((breed) => (
-              <Card
-                key={breed.id}
-                breed={breed}
-                onCLick={() => {
-                  navigate(`/breed/${breed.id}`, {
-                    state: { breed },
-                  });
-                }}
-              />
-            ))}
-            {isLoadingMain &&
-              Array.from({ length: picturesPerPage }).map((_, index) => (
-                <Skeleton key={index} />
-              ))}
-          </ul>
-        </>
-      )}
+      <h2>Случайные котики</h2>
+      <ul className={styles.list}>
+        {randomCats.map((cat) => (
+          <BreedCard key={cat.id} cat={cat} />
+        ))}
+        {isLoadingRandom &&
+          Array.from({ length: picturesPerPage }).map((_, index) => (
+            <Skeleton key={index} />
+          ))}
+      </ul>
     </main>
   );
 }

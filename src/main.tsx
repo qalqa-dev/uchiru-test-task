@@ -8,6 +8,7 @@ import './index.css';
 import App from './pages/App/App.tsx';
 import Auth from './pages/Auth/Auth.tsx';
 import Breed from './pages/Breed/Breed.tsx';
+import Breeds from './pages/Breeds/Breeds.tsx';
 import Favorites from './pages/Favorites/Favorites.tsx';
 import NotFound from './pages/NotFound/NotFound.tsx';
 import { ROUTES } from './utils/routes.ts';
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
       <Header />
       <Routes>
         <Route path={`${ROUTES.HOME}`} element={<App />}></Route>
+        <Route path={`${ROUTES.BREEDS}`} element={<Breeds />}></Route>
         <Route path={`${ROUTES.BREED}`} element={<Breed />}></Route>
         <Route path={`${ROUTES.FAVORITES}`} element={<Favorites />}></Route>
         <Route path={`${ROUTES.AUTH}`} element={<Auth />}></Route>

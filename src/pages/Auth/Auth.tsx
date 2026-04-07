@@ -5,7 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './Auth.module.scss';
 
 const Auth = () => {
-  const { isNeedToAuth, setApiKey } = useCatStore();
+  const { userApiKey, setApiKey } = useCatStore();
+  const isAuthed = !!userApiKey;
 
   const [inputKey, setInputKey] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -20,19 +21,18 @@ const Auth = () => {
       setError('Вы не ввели ключ!');
       return;
     }
-    console.log(inputKey);
     setApiKey(inputKey);
-    navigate(ROUTES.HOME);
+    navigate(ROUTES.BREEDS);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        {!isNeedToAuth ? (
+        {isAuthed ? (
           <>
             <h2 className={styles.title}>Вы авторизованы!</h2>
-            <Link to={ROUTES.HOME} className={styles.button}>
-              На главную
+            <Link to={ROUTES.BREEDS} className={styles.button}>
+              По породам
             </Link>
           </>
         ) : (

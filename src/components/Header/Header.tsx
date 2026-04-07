@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom';
 import styles from './Header.module.scss';
 
 const Header = () => {
-  const { isNeedToAuth } = useCatStore();
+  const { userApiKey } = useCatStore();
+  const isAuthed = !!userApiKey;
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -30,15 +31,22 @@ const Header = () => {
           <ul className={`${styles.list} ${isMenuOpen ? styles.listOpen : ''}`}>
             <li className={styles.item}>
               <Link className={styles.link} to={ROUTES.HOME}>
-                Все котики
+                Котики
               </Link>
             </li>
+            {isAuthed && (
+              <li className={styles.item}>
+                <Link className={styles.link} to={ROUTES.BREEDS}>
+                  По породам
+                </Link>
+              </li>
+            )}
             <li className={styles.item}>
               <Link className={styles.link} to={ROUTES.FAVORITES}>
                 Любимые котики
               </Link>
             </li>
-            {isNeedToAuth && (
+            {!isAuthed && (
               <li className={styles.item}>
                 <Link className={styles.link} to={ROUTES.AUTH}>
                   Войти
